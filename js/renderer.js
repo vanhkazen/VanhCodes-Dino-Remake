@@ -12,7 +12,7 @@ export const RENDERER_DEFAULTS = Object.freeze({
 });
 
 export const FINAL_SCENE_LINES = Object.freeze([
-  "Anh vượt ngàn chông gai, cụ thể là xương rồng đến trao em bó hoa.",
+  "Anh vượt ngàn chông gai, cụ thể là gai xương rồng đến trao em bó hoa.",
   "Em trao lại anh cái phổi, cụ thể là phổi bạn - phản bội.",
 ]);
 
@@ -296,73 +296,73 @@ export class Renderer {
       );
     };
 
-    // Các khối pixel tạo hình T-Rex cổ điển trên hệ tọa độ chuẩn 44x48 (bước lưới 2px)
+    // Các khối đặc gối chồng lên nhau (Overlapping Solid Blocks) giúp triệt tiêu 100% khe sọc sub-pixel
     const bodyBlocks = [
-      // 1. Phần đầu, mõm và hàm dưới hé mở
-      [22, 2, 16, 2],
+      // 1. Đầu, mõm và hàm dưới (gối chồng dọc từ y=2 xuống y=22)
+      [22, 2, 16, 12],
       [20, 4, 20, 10],
-      [20, 14, 10, 2],
+      [20, 10, 10, 12],
       [20, dead ? 17 : 16, 16, 2],
 
-      // 2. Phần cổ, lưng bậc thang và tay nhỏ phía trước
-      [18, 18, 10, 2],
-      [16, 20, 14, 2],
-      [12, 22, 22, 2],
-      [10, 24, 20, 2],
-      [32, 24, 2, 2],
+      // 2. Cổ, thân, lưng bậc thang và bụng (các khối đặc chồng khít vào nhau)
+      [18, 18, 10, 18],
+      [16, 20, 14, 14],
+      [12, 22, 18, 12],
+      [10, 24, 20, 8],
+      [8, 26, 22, 4],
+      [6, 28, 20, 10],
+      [4, 28, 22, 8],
+      [2, 28, 26, 6],
+      [0, 28, 30, 4],
 
-      // 3. Phần đuôi cong vút bên trái nối liền với thân bụng
-      [0, 22, 2, 2],
-      [0, 24, 4, 2],
-      [0, 26, 6, 2],
-      [8, 26, 22, 2],
-      [0, 28, 30, 2],
-      [0, 30, 28, 2],
-      [2, 32, 26, 2],
-      [4, 34, 22, 2],
-      [6, 36, 18, 2],
+      // 3. Tay nhỏ phía trước và móng (gối vào thân ở x=26..30)
+      [26, 22, 8, 2],
+      [32, 22, 2, 4],
+
+      // 4. Đuôi cong bên trái (cắm sâu vào khối thân tại y=28..32)
+      [0, 22, 2, 10],
+      [0, 24, 4, 8],
+      [0, 26, 6, 6],
     ];
 
-    // 4. Phần chân theo từng trạng thái (Chết / Đứng yên / Nhảy / Chạy 2 frame)
+    // 5. Chân (gối trực tiếp vào phần hông từ y=34 để không bị đứt nét ngang)
     let legBlocks;
     if (dead || (airPose === null && reaction !== null)) {
       legBlocks = [
-        [8, 38, 6, 2],
-        [8, 40, 4, 2],
-        [8, 42, 2, 4],
+        [8, 34, 6, 6],
+        [8, 36, 4, 8],
+        [8, 40, 2, 8],
         [8, 46, 4, 2],
-        [18, 38, 6, 2],
-        [20, 40, 4, 2],
-        [20, 42, 2, 4],
+        [18, 34, 6, 6],
+        [20, 36, 4, 8],
+        [20, 40, 2, 8],
         [20, 46, 4, 2],
       ];
     } else if (airPose === DINO_STATES.JUMPING || airPose === DINO_STATES.FALLING) {
       legBlocks = [
-        [8, 38, 6, 2],
-        [8, 40, 4, 4],
-        [8, 44, 4, 2],
-        [18, 38, 6, 2],
-        [20, 40, 4, 4],
-        [20, 44, 4, 2],
+        [8, 34, 6, 6],
+        [8, 38, 4, 8],
+        [18, 34, 6, 6],
+        [20, 38, 4, 8],
       ];
     } else if (frame % 2 === 0) {
-      // Frame chạy 0: Chân trái chạm đất, chân phải co lên (khớp với ảnh mẫu)
+      // Frame chạy 0: Chân trái chạm đất, chân phải co lên
       legBlocks = [
-        [8, 38, 6, 2],
-        [8, 40, 4, 2],
-        [8, 42, 2, 4],
+        [8, 34, 6, 6],
+        [8, 36, 4, 8],
+        [8, 40, 2, 8],
         [8, 46, 4, 2],
-        [18, 38, 4, 2],
+        [18, 34, 4, 8],
         [18, 40, 6, 2],
       ];
     } else {
       // Frame chạy 1: Chân trái co lên, chân phải chạm đất
       legBlocks = [
-        [8, 38, 6, 2],
-        [10, 40, 6, 2],
-        [18, 38, 6, 2],
-        [20, 40, 4, 2],
-        [20, 42, 2, 4],
+        [8, 34, 6, 6],
+        [10, 38, 6, 4],
+        [18, 34, 6, 6],
+        [20, 36, 4, 8],
+        [20, 40, 2, 8],
         [20, 46, 4, 2],
       ];
     }
@@ -374,7 +374,7 @@ export class Renderer {
       fillBlock(bx - 2, by - 2, bw + 4, bh + 4, outlineColor);
     }
 
-    // Lớp 2 (Pass 2): Vẽ phần thân khủng long
+    // Lớp 2 (Pass 2): Vẽ phần thân khủng long đặc, liền khối
     for (const [bx, by, bw, bh] of allBlocks) {
       fillBlock(bx, by, bw, bh, color);
     }

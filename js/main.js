@@ -3,7 +3,7 @@ import AudioManager from "./audio.js";
 import Game from "./game.js";
 
 const CANVAS_ID = "game-canvas";
-const FINAL_SCENE_SCORE = 800;
+const FINAL_SCENE_SCORE = 300;
 
 let bootAttempted = false;
 let activeApplication = null;
