@@ -284,51 +284,108 @@ export class Renderer {
   _drawStandingDino(ctx, x, y, width, height, frame, color, dead, airPose = null, reaction = null) {
     const sx = width / 44;
     const sy = height / 48;
-    const pixel = (px, py, pw, ph, fill = color) => {
+    const outlineColor = this.config.background ?? "#f7f7f7";
+
+    const fillBlock = (px, py, pw, ph, fill) => {
       ctx.fillStyle = fill;
-      ctx.fillRect(Math.round(x + px * sx), Math.round(y + py * sy), Math.max(1, Math.round(pw * sx)), Math.max(1, Math.round(ph * sy)));
+      ctx.fillRect(
+        Math.round(x + px * sx),
+        Math.round(y + py * sy),
+        Math.max(1, Math.round(pw * sx)),
+        Math.max(1, Math.round(ph * sy)),
+      );
     };
 
-    // Tail, torso, neck, and squared head form a compact side-facing silhouette.
-    pixel(1, 31, 9, 4);
-    pixel(5, 27, 7, 7);
-    pixel(9, 17, 24, 24);
-    pixel(25, 12, 9, 18);
-    pixel(25, 2, 17, 16);
-    pixel(34, 8, 9, 8);
-    pixel(16, 12, 5, 5);
-    if (reaction?.surprised) pixel(36, 3, 5, 5, "#f7f7f7");
-    else pixel(37, 5, 3, 3, "#f7f7f7");
-    const eyeOffset = clamp(Math.round(reaction?.eyeOffset ?? 0), -1, 1);
-    pixel(38 + eyeOffset, 6, 1, 1, dead ? "#d77b83" : color);
+    // Các khối pixel tạo hình T-Rex cổ điển trên hệ tọa độ chuẩn 44x48 (bước lưới 2px)
+    const bodyBlocks = [
+      // 1. Phần đầu, mõm và hàm dưới hé mở
+      [22, 2, 16, 2],
+      [20, 4, 20, 10],
+      [20, 14, 10, 2],
+      [20, dead ? 17 : 16, 16, 2],
 
-    // Alternating feet animate only the drawing; they never affect the bounds.
-    if (dead) {
-      pixel(11, 39, 12, 5);
-      pixel(25, 39, 12, 5);
-      pixel(8, 42, 6, 3);
-    } else if (airPose === DINO_STATES.JUMPING) {
-      pixel(12, 38, 8, 5);
-      pixel(25, 39, 8, 5);
-      pixel(9, 41, 8, 3);
-      pixel(26, 42, 9, 3);
-      pixel(20, 25, 7, 3);
-    } else if (airPose === DINO_STATES.FALLING) {
-      pixel(10, 39, 9, 5);
-      pixel(27, 38, 9, 5);
-      pixel(8, 43, 9, 3);
-      pixel(28, 42, 9, 3);
-      pixel(20, 29, 8, 3);
+      // 2. Phần cổ, lưng bậc thang và tay nhỏ phía trước
+      [18, 18, 10, 2],
+      [16, 20, 14, 2],
+      [12, 22, 22, 2],
+      [10, 24, 20, 2],
+      [32, 24, 2, 2],
+
+      // 3. Phần đuôi cong vút bên trái nối liền với thân bụng
+      [0, 22, 2, 2],
+      [0, 24, 4, 2],
+      [0, 26, 6, 2],
+      [8, 26, 22, 2],
+      [0, 28, 30, 2],
+      [0, 30, 28, 2],
+      [2, 32, 26, 2],
+      [4, 34, 22, 2],
+      [6, 36, 18, 2],
+    ];
+
+    // 4. Phần chân theo từng trạng thái (Chết / Đứng yên / Nhảy / Chạy 2 frame)
+    let legBlocks;
+    if (dead || (airPose === null && reaction !== null)) {
+      legBlocks = [
+        [8, 38, 6, 2],
+        [8, 40, 4, 2],
+        [8, 42, 2, 4],
+        [8, 46, 4, 2],
+        [18, 38, 6, 2],
+        [20, 40, 4, 2],
+        [20, 42, 2, 4],
+        [20, 46, 4, 2],
+      ];
+    } else if (airPose === DINO_STATES.JUMPING || airPose === DINO_STATES.FALLING) {
+      legBlocks = [
+        [8, 38, 6, 2],
+        [8, 40, 4, 4],
+        [8, 44, 4, 2],
+        [18, 38, 6, 2],
+        [20, 40, 4, 4],
+        [20, 44, 4, 2],
+      ];
     } else if (frame % 2 === 0) {
-      pixel(12, 37, 7, 8);
-      pixel(26, 38, 7, 6);
-      pixel(10, 44, 11, 3);
-      pixel(26, 43, 10, 3);
+      // Frame chạy 0: Chân trái chạm đất, chân phải co lên (khớp với ảnh mẫu)
+      legBlocks = [
+        [8, 38, 6, 2],
+        [8, 40, 4, 2],
+        [8, 42, 2, 4],
+        [8, 46, 4, 2],
+        [18, 38, 4, 2],
+        [18, 40, 6, 2],
+      ];
     } else {
-      pixel(12, 38, 7, 6);
-      pixel(26, 37, 7, 8);
-      pixel(10, 43, 10, 3);
-      pixel(25, 44, 11, 3);
+      // Frame chạy 1: Chân trái co lên, chân phải chạm đất
+      legBlocks = [
+        [8, 38, 6, 2],
+        [10, 40, 6, 2],
+        [18, 38, 6, 2],
+        [20, 40, 4, 2],
+        [20, 42, 2, 4],
+        [20, 46, 4, 2],
+      ];
+    }
+
+    const allBlocks = [...bodyBlocks, ...legBlocks];
+
+    // Lớp 1 (Pass 1): Viền cắt nền (#f7f7f7) quanh Dino tạo hiệu ứng tách đường mặt đất
+    for (const [bx, by, bw, bh] of allBlocks) {
+      fillBlock(bx - 2, by - 2, bw + 4, bh + 4, outlineColor);
+    }
+
+    // Lớp 2 (Pass 2): Vẽ phần thân khủng long
+    for (const [bx, by, bw, bh] of allBlocks) {
+      fillBlock(bx, by, bw, bh, color);
+    }
+
+    // Lớp 3 (Pass 3): Vẽ mắt
+    const eyeShift = clamp(Math.round(reaction?.eyeOffset ?? 0), -1, 1) * 2;
+    if (dead || reaction?.surprised) {
+      fillBlock(22, 4, 6, 6, outlineColor);
+      fillBlock(24 + eyeShift, 6, 2, 2, dead ? "#d77b83" : color);
+    } else {
+      fillBlock(24 + eyeShift, 6, 2, 2, outlineColor);
     }
   }
 
