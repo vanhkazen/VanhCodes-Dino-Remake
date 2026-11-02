@@ -1,0 +1,119 @@
+﻿:root {
+  color-scheme: light;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f7f7f7;
+  color: #535353;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+  overflow-x: hidden;
+  overscroll-behavior: none;
+  background: #f7f7f7;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  touch-action: manipulation;
+}
+
+.page {
+  display: grid;
+  min-height: 100vh;
+  min-height: 100dvh;
+  place-items: center;
+  padding:
+    max(12px, env(safe-area-inset-top, 0px))
+    max(12px, env(safe-area-inset-right, 0px))
+    max(12px, env(safe-area-inset-bottom, 0px))
+    max(12px, env(safe-area-inset-left, 0px));
+}
+
+.game-canvas {
+  display: block;
+  width: min(
+    calc(100vw - max(24px, env(safe-area-inset-left, 0px) + env(safe-area-inset-right, 0px))),
+    900px
+  );
+  max-width: 100%;
+  aspect-ratio: 3 / 1;
+  border: 1px solid #d8d8d8;
+  background: #f7f7f7;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.game-status-message {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  max-width: min(92vw, 640px);
+  border: 1px solid #535353;
+  background: #ffffff;
+  color: #535353;
+  font-family: monospace;
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+@media (max-width: 767px) and (orientation: portrait) {
+  .page {
+    min-height: 100svh;
+    min-height: 100dvh;
+  }
+
+  .game-canvas {
+    width: min(94vw, 100%);
+    max-width: none;
+    height: clamp(230px, 44svh, 430px);
+    height: clamp(230px, 44dvh, 430px);
+    aspect-ratio: auto;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  .page {
+    min-height: 100svh;
+    min-height: 100dvh;
+    padding:
+      max(6px, env(safe-area-inset-top, 0px))
+      max(12px, env(safe-area-inset-right, 0px))
+      max(6px, env(safe-area-inset-bottom, 0px))
+      max(12px, env(safe-area-inset-left, 0px));
+  }
+
+  .game-canvas {
+    width: min(
+      calc(100vw - max(24px, env(safe-area-inset-left, 0px) + env(safe-area-inset-right, 0px))),
+      calc((100dvh - max(16px, env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px))) * 3),
+      900px
+    );
+    max-height: calc(100dvh - max(16px, env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px)));
+    aspect-ratio: 3 / 1;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
