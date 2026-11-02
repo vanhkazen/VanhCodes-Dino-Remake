@@ -18,10 +18,10 @@
 - **`localStorage`**: Lưu trữ điểm cao (`High Score`) cục bộ kèm cơ chế fallback an toàn khi trình duyệt chặn bộ nhớ.
 
 ## 5. Link Repository
-- Repository URL: `[PLACEHOLDER: Điền URL GitHub Repository tại đây, ví dụ: https://github.com/<username>/VanhCodes-Dino-Remake]`
+- Repository URL: [github.com/vanhkazen/VanhCodes-Dino-Remake](https://github.com/vanhkazen/VanhCodes-Dino-Remake)
 
 ## 6. URL GitHub Pages
-- Live Demo (GitHub Pages): `[PLACEHOLDER: Điền URL GitHub Pages sau khi triển khai, ví dụ: https://<username>.github.io/VanhCodes-Dino-Remake/]`
+- Live Demo (GitHub Pages): [vanhkazen.github.io/VanhCodes-Dino-Remake/](https://vanhkazen.github.io/VanhCodes-Dino-Remake/)
 
 ## 7. Cấu trúc thư mục
 ```text
